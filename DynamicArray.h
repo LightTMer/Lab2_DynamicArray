@@ -49,10 +49,39 @@ public:
 		return length++;
 	}
 
+	Array& operator=(Array other) {  
+		swap(other);
+		return *this;
+	}
+
+
+	Array(const Array& other) : capacity(other.capacity), length(other.length) {
+		buf = static_cast<T*>(malloc(capacity * sizeof(T)));
+		for (int i = 0; i < length; i++) {
+			new(buf + i) T(other.buf[i]);
+		}
+	}
+
+	Array(Array&& other) noexcept :
+		buf(other.buf), length(other.length), capacity(other.capacity)
+	{
+		other.buf = nullptr;
+		other.length = 0;
+		other.capacity = 0;
+	}
+
+
+
+	void swap(Array& other) noexcept {
+		std::swap(buf, other.buf);
+		std::swap(length, other.length);
+		std::swap(capacity, other.capacity);
+	}
+
 
 	int insert(int index, const T& value) {
 		if (index < 0 || index > length) {
-			throw std::out_of_range("index out of range"); 
+			throw std::out_of_range("index out of range");
 		}
 
 		if (capacity == length) {
